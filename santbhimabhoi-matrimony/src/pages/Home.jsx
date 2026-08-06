@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import bride2Image from '../Images/Bride2.avif'
 import { API_BASE_URL } from '../config'
@@ -34,20 +35,39 @@ export default function Home() {
     fetchRecentProfiles()
   }, [])
 
+  const { user } = useSelector((state) => state.registration);
+  const firstName = user?.full_name?.split(" ")[0] || "";
+
   return (
     <>
       <section className="hero-banner">
         <div className="hero-copy">
-          <p className="eyebrow">Trusted community matchmaking</p>
-          <h1>Find your forever with faith, values, and love.</h1>
+          <p className="eyebrow">
+            {user ? `Welcome back, ${firstName}` : "Trusted community matchmaking"}
+          </p>
+          <h1>
+            {user
+              ? `Hello ${firstName}, discover your next match.`
+              : "Find your forever with faith, values, and love."}
+          </h1>
           <p className="hero-text">
-            Discover beautifully matched profiles from the Sant Bhima Bhoi community.
-            Meet families, build trust, and begin your journey toward a meaningful marriage.
+            {user
+              ? "Explore exclusive matches, send interest, and manage your profile from your dashboard."
+              : "Discover beautifully matched profiles from the Sant Bhima Bhoi community. Meet families, build trust, and begin your journey toward a meaningful marriage."}
           </p>
 
           <div className="hero-actions">
-            <Link to="/register" className="primary-btn">Register Now</Link>
-            <Link to="/login" className="secondary-btn">Login</Link>
+            {user ? (
+              <>
+                <Link to="/search" className="primary-btn">Search Matches</Link>
+                <Link to={`/profile/${user.id}`} className="secondary-btn">My Profile</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/register" className="primary-btn">Register Now</Link>
+                <Link to="/login" className="secondary-btn">Login</Link>
+              </>
+            )}
           </div>
         </div>
 

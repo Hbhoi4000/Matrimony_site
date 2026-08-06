@@ -106,6 +106,15 @@ def get_profile_by_id(db: Session, user_id: int):
         .filter(models.User.id == user_id)
         .first()
     )
+
+def get_user_by_email_and_password(db: Session, email: str, password: str):
+    return (
+        db.query(models.User)
+        .filter(models.User.email == email)
+        .filter(models.User.password == password)
+        .first()
+    )
+
 def get_window_profiles(db: Session):
     return db.query(models.User).all()
 

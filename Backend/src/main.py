@@ -41,6 +41,14 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db, user)
 
 
+@app.post("/login", response_model=schemas.UserResponse)
+def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
+    user = crud.get_user_by_email_and_password(db, credentials.email, credentials.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return user
+
+
 @app.get("/users", response_model=List[schemas.UserResponse])
 def get_users(db: Session = Depends(get_db)):
     return db.query(models.User).all()

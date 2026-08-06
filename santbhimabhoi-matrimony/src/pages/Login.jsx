@@ -1,9 +1,35 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
 import '../css/login.css'
+import { loginUser } from '../slice/Registration'
 
 export default function Login() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { loading, error } = useSelector((state) => state.registration)
+  const [formData, setFormData] = useState({ email: '', password: '' })
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      await dispatch(loginUser(formData)).unwrap()
+      navigate('/')
+    } catch (loginError) {
+      // error is handled by Redux state
+    }
+  }
+
   return (
-    <section className="auth-page"> 
+    <section className="auth-page">
       <div className="auth-card">
         <p className="eyebrow">Welcome back</p>
         <h2>Login</h2>

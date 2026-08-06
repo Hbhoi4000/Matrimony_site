@@ -9,6 +9,7 @@ import Widow from './pages/Widow'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Profile from './pages/Profile'
+import Search from './pages/Search'
 import Footer from './pages/Footer'
 import ForgotPassword from './pages/ForgotPassword'
 import './App.css'
@@ -28,6 +29,7 @@ function App() {
             <Route path="/bride" element={<Bride />} />
             <Route path="/groom" element={<Groom />} />
             <Route path="/widow" element={<Widow />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
