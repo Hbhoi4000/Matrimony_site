@@ -1,0 +1,46 @@
+.auth-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.auth-card {
+  background: var(--white);
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 420px;
+}
+.auth-card h2 { font-family: var(--font-heading); color: var(--primary); text-align: center; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem; }
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.form-group input:focus { outline: none; border-color: var(--primary); }
+.form-error { color: #c0392b; font-size: 0.8rem; margin-top: 4px; }
+.form-row-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 0.9rem; }
+.auth-footer-link { text-align: center; margin-top: 16px; font-size: 0.9rem; }
+
+/* Smooth transition for all interactive links */
+.forgot-password-link,
+.auth-footer-link a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+/* Hover states */
+.forgot-password-link:hover,
+.auth-footer-link a:hover {
+  color: var(--primary-dark, #1a252f); /* Changes color on hover */
+  text-decoration: underline; /* Visual cue for interactive link */
+  opacity: 0.85;
+}

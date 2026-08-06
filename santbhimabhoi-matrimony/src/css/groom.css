@@ -1,0 +1,2 @@
+/* Groom listing page reuses .listing-page / .card-grid from bride.css & home.css */
+.listing-page .listing-header h1 { font-family: var(--font-heading); color: var(--primary-dark); }

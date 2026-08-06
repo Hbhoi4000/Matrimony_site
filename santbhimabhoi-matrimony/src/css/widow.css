@@ -1,0 +1,6 @@
+/* Widow listing page reuses shared listing styles */
+.listing-page .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}

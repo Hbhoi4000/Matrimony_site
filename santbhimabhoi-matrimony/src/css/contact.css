@@ -1,0 +1,195 @@
+.contact-page{
+    background:#f4f7fb;
+    min-height:100vh;
+    padding-bottom:60px;
+}
+
+/* Hero */
+
+.contact-hero{
+    background:linear-gradient(135deg,#8b0000,#d32f2f);
+    color:white;
+    text-align:center;
+    padding:70px 20px;
+}
+
+.contact-hero h1{
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.contact-hero p{
+    font-size:18px;
+    max-width:700px;
+    margin:auto;
+}
+
+/* Head Office */
+
+.main-contact{
+    display:flex;
+    justify-content:center;
+    margin-top:-40px;
+    padding:20px;
+}
+
+.main-card{
+    background:white;
+    width:700px;
+    border-radius:15px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.main-card h2{
+    color:#8b0000;
+    margin-bottom:15px;
+}
+
+.main-card p{
+    margin:10px 0;
+    color:#555;
+}
+
+/* District */
+
+.title{
+    text-align:center;
+    color:#8b0000;
+    margin:60px 0 30px;
+}
+
+.contact-grid{
+
+    max-width:1300px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+
+    padding:20px;
+}
+
+.contact-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.contact-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+
+}
+
+.circle{
+
+    width:80px;
+
+    height:80px;
+
+    border-radius:50%;
+
+    background:#8b0000;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin:auto;
+
+    font-size:35px;
+
+    margin-bottom:20px;
+}
+
+.contact-card h3{
+
+    color:#8b0000;
+
+    margin-bottom:5px;
+}
+
+.contact-card span{
+
+    display:inline-block;
+
+    background:#ffe5e5;
+
+    color:#8b0000;
+
+    padding:5px 12px;
+
+    border-radius:20px;
+
+    margin-bottom:15px;
+
+    font-size:14px;
+}
+
+.contact-card p{
+
+    color:#555;
+
+    margin:8px 0;
+}
+
+.contact-card button{
+
+    margin-top:20px;
+
+    background:#8b0000;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:25px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.contact-card button:hover{
+
+    background:#b71c1c;
+}
+
+@media(max-width:768px){
+
+.contact-hero h1{
+
+font-size:32px;
+
+}
+
+.main-card{
+
+width:100%;
+
+}
+
+}
