@@ -1,0 +1,8 @@
+GET http://127.0.0.1:8000/profiles/grooms
+GET http://127.0.0.1:8000/profiles
+GET http://127.0.0.1:8000/profiles/search?sex=Female
+GET http://127.0.0.1:8000/profiles/brides
+GET http://127.0.0.1:8000/window/brides
+GET http://127.0.0.1:8000/window/grooms
+Post http://127.0.0.1:8000/register
+GET http://127.0.0.1:8000/profile-counts
