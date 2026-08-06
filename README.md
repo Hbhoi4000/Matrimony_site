@@ -13,20 +13,66 @@ This project contains a React frontend and a FastAPI backend.
 - Node.js 18+
 - npm
 
-## Backend setup
+# Backend Setup
 
-1. Open a terminal in the Backend folder.
-2. Create and activate a virtual environment (recommended):
-   - Windows PowerShell:
-     - python -m venv .venv
-     - .\.venv\Scripts\Activate.ps1
-   - macOS/Linux:
-     - python3 -m venv .venv
-     - source .venv/bin/activate
-3. Install Python dependencies:
-   - pip install -r requirements.txt
-4. Start the backend server:
-   - uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+## 1. Open a terminal
+
+Navigate to the backend source folder:
+
+```bash
+cd Backend/src
+```
+
+## 2. Create a virtual environment (recommended)
+
+### Windows (PowerShell)
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### macOS/Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+## 3. Install Python dependencies
+
+Make sure `requirements.txt` is located inside `Backend/src`.
+
+```bash
+pip install -r requirements.txt
+```
+
+## 4. Start the FastAPI server
+
+Run the following command from the `Backend/src` directory:
+
+```bash
+uvicorn main:app --reload
+```
+
+The backend will start at:
+
+```
+http://127.0.0.1:8000
+```
+
+Swagger API documentation:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+ReDoc documentation:
+
+```
+http://127.0.0.1:8000/redoc
+```
+
 
 ## Frontend setup
 
