@@ -161,3 +161,17 @@ def get_profile_counts(db: Session):
         "total_grooms": total_grooms,
         "total_window_profiles": total_window_profiles
     }
+def update_user_profile(db: Session, user_id: int, profile_data: schemas.UserUpdate):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        return None
+
+    # Exclude unset fields so partial updates work
+    update_data = profile_data.model_dump(exclude_unset=True) 
+
+    for key, value in update_data.items():
+        setattr(db_user, key, value)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user

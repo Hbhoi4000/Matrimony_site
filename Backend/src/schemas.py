@@ -16,6 +16,7 @@ class WindowProfileResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -51,11 +52,38 @@ class UserCreate(BaseModel):
 
     image_url: Optional[str] = None
 
+class UserUpdate(BaseModel):
+    full_name: str
+    email: EmailStr
+    password: str
 
+    sex: str
+    age: int
+    education: Optional[str] = None
 
+    address: Optional[str] = None
+
+    is_job: str
+    job_name: Optional[str] = None
+    job_designation: Optional[str] = None
+
+    maternal_uncle_name: Optional[str] = None
+    maternal_uncle_address: Optional[str] = None
+
+    brothers: int = 0
+    sisters: int = 0
+
+    brother_spouse_name: Optional[str] = None
+    sister_husband_name: Optional[str] = None
+
+    mother_full_name: str
+    father_full_name: str
+
+    blood_group: Optional[str] = None
+
+    image_url: Optional[str] = None
 
 class UserResponse(BaseModel):
-
     id: int
 
     full_name: str

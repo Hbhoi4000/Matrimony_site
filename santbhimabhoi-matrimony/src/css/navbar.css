@@ -1,526 +1,275 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap");
-
-/* ---------- Design tokens ---------- */
+/* ==========================================
+   COLOR PALETTE VARIABLES
+   ========================================== */
 :root {
-  --maroon: #6b1e3c;
-  --maroon-dark: #4a1329;
-  --gold: #c9a227;
-  --gold-light: #e6c766;
-  --ivory: #fff9f2;
-  --ink: #2b2118;
-  --blush: #f6e9ec;
-  --muted: #8a7a72;
-  --shadow: 0 6px 24px rgba(74, 19, 41, 0.1);
+  --primary-color: #d32f2f;       /* Primary accent (Maroon/Red) */
+  --primary-hover: #b71c1c;       /* Darker hover state */
+  --primary-light: #ffebee;       /* Soft light tint for hover links */
+  --text-dark: #2c3e50;           /* Dark text color */
+  --text-muted: #555555;          /* Secondary text color */
+  --bg-menu: #ffffff;              /* Menu background color */
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* ---------- Shell ---------- */
+/* ==========================================
+   NAVBAR CONTAINER
+   ========================================== */
 .navbar {
+  background-color: var(--bg-menu);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
-  z-index: 100;
-  font-family: "Jost", sans-serif;
-  box-shadow: var(--shadow);
+  z-index: 1000;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ---------- Top row: logo + actions ---------- */
+/* ==========================================
+   TOP ROW: LOGO, ACTIONS, PROFILE
+   ========================================== */
 .navbar-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  max-width: 1240px;
+  padding: 12px 24px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0.7rem 1.75rem;
-  background: var(--ivory);
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   text-decoration: none;
-  flex-shrink: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
 .logo-icon {
-  color: var(--gold);
-  font-size: 1.6rem;
+  font-size: 2rem;
+  color: var(--primary-color);
 }
 
-.navbar-logo span {
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 700;
-  font-size: 1.85rem;
-  letter-spacing: 0.02em;
-  color: var(--maroon-dark);
-}
-
-.navbar-logo span em {
+.navbar-logo em {
   font-style: normal;
-  color: var(--gold);
+  color: var(--primary-color);
 }
 
-/* ---------- Actions (icons + profile) ---------- */
+/* Actions & Icons */
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-shrink: 0;
+  gap: 16px;
 }
 
 .icon-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  background: transparent;
   border: none;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px;
   border-radius: 50%;
-  background: var(--blush);
-  color: var(--maroon-dark);
-  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .icon-btn:hover {
-  background: var(--maroon);
-  color: var(--ivory);
-  transform: translateY(-2px);
+  background-color: var(--primary-light);
+  color: var(--primary-color);
 }
 
-.badge {
+.icon-btn .badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: var(--gold);
-  color: var(--maroon-dark);
-  font-size: 0.65rem;
-  font-weight: 700;
+  top: 2px;
+  right: 2px;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--ivory);
 }
 
-/* ---------- Profile ---------- */
+/* Auth Buttons */
+.btn-nav-outline {
+  text-decoration: none;
+  padding: 6px 16px;
+  border: 1.5px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-nav-outline:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-nav-filled {
+  text-decoration: none;
+  padding: 6px 16px;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: 1.5px solid var(--primary-color);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-nav-filled:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* Dropdown Menu */
 .profile {
   position: relative;
-  margin-left: 0.3rem;
 }
 
 .profile-trigger {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: none;
+  gap: 8px;
+  background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
-  border-radius: 999px;
-  transition: background 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 20px;
 }
 
 .profile-trigger:hover {
-  background: var(--blush);
+  background-color: #f5f5f5;
 }
 
 .profile-img {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--gold);
-  flex-shrink: 0;
-}
-
-.profile-name {
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.chevron {
-  font-size: 0.7rem;
-  color: var(--muted);
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-}
-
-.chevron-up {
-  transform: rotate(180deg);
+  border: 2px solid var(--primary-color);
 }
 
 .profile-dropdown {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
+  background-color: #ffffff;
   min-width: 170px;
-  background: var(--ivory);
-  border: 1px solid rgba(107, 30, 60, 0.12);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  padding: 0.4rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: dropdown-in 0.16s ease;
+  z-index: 1001;
 }
 
-@keyframes dropdown-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.profile-dropdown a {
-  padding: 0.55rem 0.7rem;
-  border-radius: 6px;
+.profile-dropdown a,
+.profile-dropdown .dropdown-button {
+  padding: 12px 16px;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--text-dark);
   font-size: 0.9rem;
-}
-
-.profile-dropdown a:hover {
-  background: var(--blush);
-  color: var(--maroon-dark);
-}
-
-/* ---------- Hamburger (mobile) ---------- */
-.navbar-auth {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.btn-nav-outline,
-.btn-nav-filled {
-  border-radius: 999px;
-  padding: 0.75rem 1.2rem;
-  font-size: 0.92rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-}
-
-.btn-nav-outline {
-  border: 1.5px solid var(--maroon-dark);
-  color: var(--maroon-dark);
-  background: rgba(255, 249, 242, 0.95);
-}
-
-.btn-nav-filled {
-  background: var(--maroon);
-  color: var(--ivory);
-}
-
-.btn-nav-outline:hover,
-.btn-nav-filled:hover {
-  transform: translateY(-1px);
-}
-
-.dropdown-button {
-  width: 100%;
-  padding: 0.6rem 0.9rem;
-  border: none;
   background: transparent;
-  color: var(--ink);
-  text-align: left;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-.dropdown-button:hover {
-  background: var(--blush);
-}
-
-.hamburger {
-  display: none;
-  width: 40px;
-  height: 40px;
   border: none;
-  border-radius: 8px;
-  background: var(--blush);
-  color: var(--maroon-dark);
-  font-size: 1.05rem;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s ease;
 }
 
-/* ---------- Bottom row: nav links strip ---------- */
+.profile-dropdown a:hover,
+.profile-dropdown .dropdown-button:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+/* ==========================================
+   BOTTOM ROW: MENU NAVIGATION LINKS
+   ========================================== */
 .navbar-links {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0.55rem 1.75rem;
-  background: linear-gradient(90deg, var(--maroon-dark), var(--maroon));
-  border-top: 2px solid var(--gold);
+  gap: 24px;
+  padding: 10px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--bg-menu);
 }
 
 .navbar-links a {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1.1rem;
+  gap: 6px;
   text-decoration: none;
-  color: rgba(255, 249, 242, 0.85);
-  font-size: 0.92rem;
+  color: var(--text-muted);
   font-weight: 500;
-  letter-spacing: 0.02em;
-  border-radius: 8px;
-  position: relative;
-  transition: color 0.2s ease, background 0.2s ease;
+  font-size: 0.95rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.navbar-links a svg {
-  font-size: 0.85rem;
-  opacity: 0.85;
-}
-
-/* signature: mehndi-swipe gold underline */
-.navbar-links a::before {
-  content: "";
-  position: absolute;
-  left: 1.1rem;
-  right: 1.1rem;
-  bottom: 0.25rem;
-  height: 2px;
-  background: var(--gold-light);
-  border-radius: 2px;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease;
-}
-
+/* Menu Hover & Active Link Colors */
 .navbar-links a:hover {
-  color: var(--ivory);
-  background: rgba(255, 249, 242, 0.08);
-}
-
-.navbar-links a:hover::before {
-  transform: scaleX(1);
+  color: var(--primary-color);
+  background-color: var(--primary-light);
 }
 
 .navbar-links a.active {
-  color: var(--ivory);
-  font-weight: 600;
-  background: rgba(255, 249, 242, 0.1);
+  color: var(--primary-color);
+  font-weight: 700;
+  background-color: var(--primary-light);
+  border-bottom: 2px solid var(--primary-color);
 }
 
-.navbar-links a.active::before {
-  transform: scaleX(1);
+/* Mobile View Adjustments */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  cursor: pointer;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 860px) {
-  .navbar-top {
-    padding: 0.65rem 1.25rem;
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
   }
 
   .profile-name {
     display: none;
   }
 
-  .hamburger {
-    display: flex;
-  }
-
   .navbar-links {
+    display: none;
     flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
-    border-top: none;
-    transition: max-height 0.25s ease;
+    width: 100%;
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+    gap: 12px;
+    align-items: flex-start;
   }
 
   .navbar-links-open {
-    max-height: 400px;
-    padding: 0.5rem 0;
-    border-top: 2px solid var(--gold);
+    display: flex;
   }
 
   .navbar-links a {
-    padding: 0.85rem 1.75rem;
-    border-radius: 0;
-  }
-
-  .navbar-links a::before {
-    left: 1.75rem;
-    right: 1.75rem;
+    width: 100%;
   }
 }
-
-@media (max-width: 480px) {
-  .navbar-top {
-    padding: 0.6rem 1rem;
-  }
-
-  .navbar-logo span {
-    font-size: 1.5rem;
-  }
-
-  .navbar-actions {
-    gap: 0.35rem;
-  }
-
-  .icon-btn {
-    width: 36px;
-    height: 36px;
-  }
-}
-/* .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-  border-bottom: 1px solid rgba(107, 114, 128, 0.08);
-}
-
-.navbar-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 32px;
-  max-width: 1300px;
-  margin: 0 auto;
-}
-
-.navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-heading);
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
-  color: var(--primary-dark);
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-}
-
-.navbar-logo em {
-  font-style: normal;
-  color: var(--accent);
-}
-
-.logo-icon {
-  font-size: clamp(1.5rem, 2vw, 1.9rem);
-  color: var(--accent);
-}
-
-.navbar-auth {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.btn-nav-outline,
-.btn-nav-filled {
-  padding: 9px 22px;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: clamp(0.8rem, 1vw, 0.9rem);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.btn-nav-outline {
-  border: 1.5px solid var(--primary);
-  color: var(--primary);
-  background: transparent;
-}
-
-.btn-nav-filled {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: var(--white);
-  box-shadow: 0 4px 14px rgba(139, 30, 63, 0.25);
-}
-
-.navbar-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(14px, 2vw, 36px);
-  padding: 12px 20px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-light);
-}
-
-.navbar-links a {
-  position: relative;
-  font-size: clamp(0.72rem, 0.9vw, 0.92rem);
-  font-weight: 600;
-  color: var(--text-dark);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  padding-bottom: 4px;
-  text-decoration: none;
-}
-
-.navbar-links a:not(:last-child)::after {
-  content: "•";
-  position: absolute;
-  right: -18px;
-  color: var(--accent);
-  font-weight: normal;
-}
-
-@media (max-width: 768px) {
-  .navbar-top {
-    flex-direction: column;
-    gap: 12px;
-    padding: 14px 16px;
-  }
-
-  .navbar-links {
-    flex-wrap: wrap;
-    gap: 12px 18px;
-    padding: 10px 16px;
-  }
-
-  .navbar-links a:not(:last-child)::after {
-    display: none;
-  }
-
-  .btn-nav-outline,
-  .btn-nav-filled {
-    padding: 8px 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar-top {
-    padding: 12px 14px;
-  }
-
-  .navbar-links {
-    gap: 10px 14px;
-  }
-
-  .navbar-links a {
-    font-size: 0.68rem;
-  }
-} */

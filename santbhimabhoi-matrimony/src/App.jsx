@@ -12,6 +12,8 @@ import Profile from './pages/Profile'
 import Search from './pages/Search'
 import Footer from './pages/Footer'
 import ForgotPassword from './pages/ForgotPassword'
+import MyProfile from './pages/MyProfile'
+import ProfilePdf from './pages/ProfilePdf'
 import './App.css'
 import './css/Footer.css'
 
@@ -33,6 +35,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/MyProfile" element={<MyProfile />} />
+            <Route path="/profile-pdf/:id" element={<ProfilePdf />} />
             {/* Dynamic Route */}
             <Route path="/profile/:id" element={<Profile />} />
           </Routes>
