@@ -17,7 +17,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import MyProfile from './pages/MyProfile'
 import ProfilePdf from './pages/ProfilePdf'
 import LandingPage from './pages/LandingPage'
-
+import ResetPassword from './pages/ResetPassword'
 import './App.css'
 import './css/Footer.css'
 
@@ -55,6 +55,7 @@ function App() {
             <Route path="/login" element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />} />
             <Route path="/register" element={isAuthenticated ? <Navigate to="/home" replace /> : <Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
 

@@ -7,6 +7,8 @@ import loginReducer from "../slice/loging"; // Import the login reducer
 import testimonialReducer from "../slice/testimonialSlice"; // Import the testimonial reducer
 import profileReducer from "../slice/profileSlice"; // Import the profile reducer
 import interestReducer from "../slice/interestSlice"; // Import the interest reducer
+import forgotPasswordReducer from "../slice/forgotPasswordSlice"; // Import the forgot password reducer
+
 export const store = configureStore({
   reducer: {
     bride: brideReducer,
@@ -17,5 +19,6 @@ export const store = configureStore({
     testimonials: testimonialReducer,
     profiles: profileReducer,
     interest: interestReducer,
+    forgotPassword:forgotPasswordReducer
   },
 });

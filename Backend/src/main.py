@@ -1,6 +1,9 @@
 from typing import List, Optional
 import os
 import shutil
+import random
+from datetime import datetime, timedelta
+from pydantic import BaseModel, EmailStr
 from uuid import uuid4
 from fastapi import Depends, FastAPI, HTTPException, status, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +22,9 @@ except ImportError:
     import schemas
     from database import Base, engine, get_db
 from fastapi.staticfiles import StaticFiles
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+from dotenv import load_dotenv
+
 Base.metadata.create_all(bind=engine)
 
 # Password hashing setup
@@ -46,7 +52,95 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Mount the static directory so images can be served over HTTP
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Structure: { "email@example.com": {"otp": "123456", "expires_at": datetime} }
+otp_storage = {}
+load_dotenv()  # Load environment variables from .env file
 
+# conf = ConnectionConfig(
+#     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+#     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+#     MAIL_FROM=os.getenv("MAIL_FROM"),
+#     MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
+#     MAIL_SERVER=os.getenv("MAIL_SERVER"),
+#     MAIL_STARTTLS=True,
+#     MAIL_SSL_TLS=False,
+#     USE_CREDENTIALS=True,
+#     VALIDATE_CERTS=True
+# )
+# SMTP Configuration (Using the exact working credentials from test.py)
+conf = ConnectionConfig(
+    MAIL_USERNAME="hbhoi4000@gmail.com",
+    MAIL_PASSWORD="mqxvtjfqepzhqalf", # Paste the exact 16-char password string used in test.py
+    MAIL_FROM="hbhoi4000@gmail.com",
+    MAIL_PORT=587,
+    MAIL_SERVER="smtp.gmail.com",                  # Fixed SMTP host
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
+    USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True
+)
+# Pydantic Schemas for Input Validation
+class EmailRequest(BaseModel):
+    email: EmailStr
+
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
+@app.post("/send-otp")
+async def send_otp(request: EmailRequest):
+    print(f"Received OTP request for email: {request.email}")  # Debugging log
+    # 1. Generate a 6-digit random string OTP
+    generated_otp = f"{random.randint(100000, 999999)}"
+    
+    # 2. Set an expiration threshold (e.g., 5 minutes)
+    expiration_time = datetime.utcnow() + timedelta(minutes=5)
+    otp_storage[request.email] = {
+        "otp": generated_otp,
+        "expires_at": expiration_time
+    }
+    
+    # 3. Formulate the email message
+    message = MessageSchema(
+        subject="Your Email Verification Code",
+        recipients=[request.email],
+        body=f"Your OTP code is: {generated_otp}. It expires in 5 minutes.",
+        subtype=MessageType.plain
+    )
+    
+    # 4. Dispatch the email asynchronously
+    fm = FastMail(conf)
+    print("fm", fm)
+    print(f"Sending OTP {generated_otp} to {request.email}")  # Debugging log
+    try:
+        await fm.send_message(message)
+        return {"message": "OTP sent successfully"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send email: {str(e)}"
+        )
+
+@app.post("/verify-otp")
+async def verify_otp(request: VerifyOTPRequest):
+    stored_data = otp_storage.get(request.email)
+    
+    # 1. Check if OTP exists for the specific email address
+    if not stored_data:
+        raise HTTPException(status_code=400, detail="No OTP requested for this email.")
+        
+    # 2. Check if the code has expired
+    if datetime.utcnow() > stored_data["expires_at"]:
+        del otp_storage[request.email]
+        raise HTTPException(status_code=400, detail="OTP has expired.")
+        
+    # 3. Check if input matches the recorded token
+    if stored_data["otp"] != request.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP code.")
+        
+    # Clear OTP records from state memory upon verification success
+    del otp_storage[request.email]
+    return {"message": "Email verified successfully!"}
 def save_uploaded_file(upload_file: UploadFile) -> str:
     """Saves an UploadFile to disk and returns its accessible static URL path."""
     if not upload_file.filename:
