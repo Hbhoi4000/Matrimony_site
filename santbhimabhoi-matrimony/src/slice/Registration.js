@@ -3,25 +3,32 @@ import { API_BASE_URL } from "../config";
 
 export const registerUser = createAsyncThunk(
   "register/registerUser",
-  async (userData, { rejectWithValue }) => {
+  async (formDataPayload, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
+        // DO NOT set 'Content-Type': 'multipart/form-data' here!
+        // The browser attaches the multipart boundary automatically when passing FormData in body.
+        body: formDataPayload, 
       });
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        throw new Error(errorBody?.detail || "Registration Failed");
+        // Extract FastAPI validation error messages if available
+        const message = 
+          typeof errorBody?.detail === "string" 
+            ? errorBody.detail 
+            : Array.isArray(errorBody?.detail) 
+            ? errorBody.detail.map((err) => `${err.loc.join("->")}: ${err.msg}`).join(", ")
+            : "Registration Failed";
+            
+        return rejectWithValue(message);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || "Something went wrong");
     }
   }
 );

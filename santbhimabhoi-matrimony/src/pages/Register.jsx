@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./../css/register.css";
@@ -33,6 +33,15 @@ export default function Register() {
     image: null,
   });
 
+  // Cleanup object URL preview to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
   const handleChange = (e) => {
     const { name, value, type } = e.target;
 
@@ -41,7 +50,6 @@ export default function Register() {
       [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
     }));
 
-    // Clear field error on change
     if (errors[name]) {
       setErrors((prevErrors) => ({ ...prevErrors, [name]: null }));
     }
@@ -123,8 +131,18 @@ export default function Register() {
     }
 
     const payload = new FormData();
+    
+    // Safely append each key to prevent [object Object] serialization
     Object.keys(formData).forEach((key) => {
-      payload.append(key, formData[key]);
+      const value = formData[key];
+      
+      if (value instanceof File) {
+        payload.append(key, value);
+      } else if (value !== null && value !== undefined) {
+        payload.append(key, String(value));
+      } else {
+        payload.append(key, "");
+      }
     });
 
     dispatch(registerUser(payload));
@@ -462,7 +480,7 @@ export default function Register() {
             </div>
           </div>
 
-          {error && <p className="form-error">{error}</p>}
+          {error && <p className="form-error">{String(error)}</p>}
           {success && <p className="form-success">Profile created successfully!</p>}
 
           <button className="register-btn" type="submit" disabled={loading}>

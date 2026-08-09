@@ -1,10 +1,15 @@
 from typing import List, Optional
-
+import os
+import shutil
+from uuid import uuid4
 from fastapi import Depends, FastAPI, HTTPException, status, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-
+from fastapi import FastAPI, Depends, Form, UploadFile, File, HTTPException
+from sqlalchemy.orm import Session
+from typing import Optional
+import schemas, crud
 try:
     from . import crud, models, schemas
     from .database import Base, engine, get_db
@@ -13,7 +18,7 @@ except ImportError:
     import models
     import schemas
     from database import Base, engine, get_db
-
+from fastapi.staticfiles import StaticFiles
 Base.metadata.create_all(bind=engine)
 
 # Password hashing setup
@@ -24,6 +29,7 @@ app = FastAPI(title="Sant Bhima Bhoi Matrimony API")
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    
 ]
 
 app.add_middleware(
@@ -33,7 +39,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Create a directory to store uploaded images if it doesn't exist
+UPLOAD_DIR = "static/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Mount the static directory so images can be served over HTTP
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+def save_uploaded_file(upload_file: UploadFile) -> str:
+    """Saves an UploadFile to disk and returns its accessible static URL path."""
+    if not upload_file.filename:
+        raise HTTPException(status_code=400, detail="No file uploaded")
+
+    # Generate a unique filename using UUID to prevent collisions
+    file_extension = os.path.splitext(upload_file.filename)[1]
+    unique_filename = f"{uuid4().hex}{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+
+    # Save file contents to disk
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(upload_file.file, buffer)
+
+    # Return relative URL path (e.g. "/static/uploads/a1b2c3d4.jpg")
+    return f"/static/uploads/{unique_filename}"
 def authenticate_user(db: Session, email: str, password: str):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
@@ -61,8 +90,57 @@ def home():
     return {"message": "API Running Successfully"}
 
 @app.post("/register", response_model=schemas.UserResponse)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.create_user(db, user)
+def register(
+    full_name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),  # <-- ADDED PASSWORD FORM FIELD
+    sex: str = Form(...),
+    age: int = Form(...),
+    mother_full_name: str = Form(...),
+    father_full_name: str = Form(...),
+    education: Optional[str] = Form(None),
+    address: Optional[str] = Form(None),
+    is_job: str = Form("no"),
+    job_name: Optional[str] = Form(None),
+    job_designation: Optional[str] = Form(None),
+    maternal_uncle_name: Optional[str] = Form(None),
+    maternal_uncle_address: Optional[str] = Form(None),
+    brothers: int = Form(0),
+    sisters: int = Form(0),
+    brother_spouse_name: Optional[str] = Form(None),
+    sister_husband_name: Optional[str] = Form(None),
+    blood_group: Optional[str] = Form(None),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    # Save image
+    image_url = save_uploaded_file(image)
+
+    # Instantiate UserCreate schema including password
+    user_data = schemas.UserCreate(
+        full_name=full_name,
+        email=email,
+        password=password,  # <-- PASS PASSWORD TO PYDANTIC
+        sex=sex,
+        age=age,
+        education=education,
+        address=address,
+        is_job=is_job,
+        job_name=job_name,
+        job_designation=job_designation,
+        maternal_uncle_name=maternal_uncle_name,
+        maternal_uncle_address=maternal_uncle_address,
+        brothers=brothers,
+        sisters=sisters,
+        brother_spouse_name=brother_spouse_name,
+        sister_husband_name=sister_husband_name,
+        mother_full_name=mother_full_name,
+        father_full_name=father_full_name,
+        blood_group=blood_group,
+        image_url=image_url
+    )
+
+    return crud.create_user(db, user_data)
 
 @app.post("/login")
 async def login(credentials: schemas.UserLogin = Body(...), db: Session = Depends(get_db)):
