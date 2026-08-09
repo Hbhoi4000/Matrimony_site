@@ -1,497 +1,149 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import "./../css/register.css";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { LOGIN_ROUTE } from '../constants/routes'
+import { registerUser } from '../slice/Registration'
+import { getFieldErrors, logSchemaValidationError, registrationSchema } from '../schemas/auth'
 
-import { registerUser } from "../slice/Registration";
+const initialForm = {
+  full_name: '',
+  email: '',
+  password: '',
+  sex: '',
+  age: '',
+  mother_full_name: '',
+  father_full_name: '',
+  education: '',
+  address: '',
+  is_job: 'no',
+}
 
 export default function Register() {
-  const dispatch = useDispatch();
-  const { loading, error, success } = useSelector((state) => state.registration);
-  const [errors, setErrors] = useState({});
-  const [preview, setPreview] = useState(null);
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    password: "",
-    sex: "",
-    age: "",
-    education: "",
-    address: "",
-    is_job: "",
-    job_name: "",
-    job_designation: "",
-    maternal_uncle_name: "",
-    maternal_uncle_address: "",
-    brothers: 0,
-    sisters: 0,
-    brother_spouse_name: "",
-    sister_husband_name: "",
-    mother_full_name: "",
-    father_full_name: "",
-    blood_group: "",
-    image: null,
-  });
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { loading, error } = useSelector((state) => state.registration)
+  const [form, setForm] = useState(initialForm)
+  const [image, setImage] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
 
-  // Cleanup object URL preview to avoid memory leaks
-  useEffect(() => {
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((current) => ({ ...current, [name]: value }))
+    setFieldErrors((current) => ({ ...current, [name]: undefined }))
+  }
 
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
-    }));
-
-    if (errors[name]) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: null }));
-    }
-  };
-
-  const validate = () => {
-    let newErrors = {};
-
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = "Full name is required";
+    const validation = registrationSchema.safeParse({ ...form, image })
+    if (!validation.success) {
+      logSchemaValidationError('Registration', validation.error)
+      setFieldErrors(getFieldErrors(validation.error))
+      return
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)
-    ) {
-      newErrors.email = "Invalid email address";
+    setFieldErrors({})
+
+    const payload = new FormData()
+    Object.entries(form).forEach(([key, value]) => {
+      if (value !== '') payload.append(key, value)
+    })
+    payload.append('image', image)
+
+    const result = await dispatch(registerUser(payload))
+    if (registerUser.fulfilled.match(result)) {
+      navigate(LOGIN_ROUTE)
     }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password should be at least 6 characters";
-    }
-
-    if (!formData.sex) {
-      newErrors.sex = "Select gender";
-    }
-
-    if (!formData.age || formData.age < 18) {
-      newErrors.age = "Age should be at least 18";
-    }
-
-    if (!formData.education.trim()) {
-      newErrors.education = "Education is required";
-    }
-
-    if (!formData.address.trim()) {
-      newErrors.address = "Address is required";
-    }
-
-    if (!formData.father_full_name.trim()) {
-      newErrors.father_full_name = "Father name is required";
-    }
-
-    if (!formData.mother_full_name.trim()) {
-      newErrors.mother_full_name = "Mother name is required";
-    }
-
-    if (!formData.image) {
-      newErrors.image = "Profile photo is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setFormData((prev) => ({
-      ...prev,
-      image: file,
-    }));
-
-    setPreview(URL.createObjectURL(file));
-
-    if (errors.image) {
-      setErrors((prevErrors) => ({ ...prevErrors, image: null }));
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validate()) {
-      return;
-    }
-
-    const payload = new FormData();
-    
-    // Safely append each key to prevent [object Object] serialization
-    Object.keys(formData).forEach((key) => {
-      const value = formData[key];
-      
-      if (value instanceof File) {
-        payload.append(key, value);
-      } else if (value !== null && value !== undefined) {
-        payload.append(key, String(value));
-      } else {
-        payload.append(key, "");
-      }
-    });
-
-    dispatch(registerUser(payload));
-  };
+  }
 
   return (
-    <section className="register-page">
-      <div className="register-container">
-        <div className="register-header">
-          <p>Create Profile</p>
-          <h1>Find Your Life Partner</h1>
-          <span>Join Sant Bhima Bhoi Matrimony</span>
-        </div>
+    <section className="auth-section">
+      <div className="auth-card register-card">
+        <p className="eyebrow">Create profile</p>
+        <h2>Register</h2>
 
-        <form className="register-form" onSubmit={handleSubmit}>
-          {/* Personal Details */}
-          <div className="form-section">
-            <h2>👤 Personal Information</h2>
-            <div className="form-grid">
-              
-              <div className="input-group">
-                <label className="input-label">
-                  Full Name <span className="required-star">*</span>
-                </label>
-                <input
-                  name="full_name"
-                  placeholder="Enter full name"
-                  value={formData.full_name}
-                  onChange={handleChange}
-                  className={errors.full_name ? "input-error" : ""}
-                />
-                {errors.full_name && (
-                  <span className="error-text">{errors.full_name}</span>
-                )}
-              </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label>
+            <span>Full name</span>
+            <input name="full_name" value={form.full_name} onChange={handleChange} placeholder="Enter your full name" required aria-invalid={Boolean(fieldErrors.full_name)} />
+            {fieldErrors.full_name ? <small role="alert">{fieldErrors.full_name}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Email <span className="required-star">*</span>
-                </label>
-                <input
-                  name="email"
-                  placeholder="Enter email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={errors.email ? "input-error" : ""}
-                />
-                {errors.email && (
-                  <span className="error-text">{errors.email}</span>
-                )}
-              </div>
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" required aria-invalid={Boolean(fieldErrors.email)} />
+            {fieldErrors.email ? <small role="alert">{fieldErrors.email}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Password <span className="required-star">*</span>
-                </label>
-                <input
-                  name="password"
-                  placeholder="Enter password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={errors.password ? "input-error" : ""}
-                />
-                {errors.password && (
-                  <span className="error-text">{errors.password}</span>
-                )}
-              </div>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="Create a password" required aria-invalid={Boolean(fieldErrors.password)} />
+            {fieldErrors.password ? <small role="alert">{fieldErrors.password}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Gender <span className="required-star">*</span>
-                </label>
-                <select
-                  name="sex"
-                  value={formData.sex}
-                  onChange={handleChange}
-                  className={errors.sex ? "input-error" : ""}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-                {errors.sex && (
-                  <span className="error-text">{errors.sex}</span>
-                )}
-              </div>
+          <label>
+            <span>Profile type</span>
+            <select name="sex" value={form.sex} onChange={handleChange} required aria-invalid={Boolean(fieldErrors.sex)}>
+              <option value="" disabled>Select profile type</option>
+              <option value="Female">Bride</option>
+              <option value="Male">Groom</option>
+              <option value="Widow">Widow</option>
+            </select>
+            {fieldErrors.sex ? <small role="alert">{fieldErrors.sex}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Age <span className="required-star">*</span>
-                </label>
-                <input
-                  name="age"
-                  placeholder="Enter age"
-                  type="number"
-                  value={formData.age}
-                  onChange={handleChange}
-                  className={errors.age ? "input-error" : ""}
-                />
-                {errors.age && (
-                  <span className="error-text">{errors.age}</span>
-                )}
-              </div>
+          <label>
+            <span>Age</span>
+            <input type="number" name="age" value={form.age} onChange={handleChange} min="18" max="100" required aria-invalid={Boolean(fieldErrors.age)} />
+            {fieldErrors.age ? <small role="alert">{fieldErrors.age}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">Blood Group</label>
-                <input
-                  name="blood_group"
-                  placeholder="e.g. O+, A+"
-                  value={formData.blood_group}
-                  onChange={handleChange}
-                />
-              </div>
+          <label>
+            <span>Father's full name</span>
+            <input name="father_full_name" value={form.father_full_name} onChange={handleChange} required aria-invalid={Boolean(fieldErrors.father_full_name)} />
+            {fieldErrors.father_full_name ? <small role="alert">{fieldErrors.father_full_name}</small> : null}
+          </label>
 
-            </div>
-          </div>
+          <label>
+            <span>Mother's full name</span>
+            <input name="mother_full_name" value={form.mother_full_name} onChange={handleChange} required aria-invalid={Boolean(fieldErrors.mother_full_name)} />
+            {fieldErrors.mother_full_name ? <small role="alert">{fieldErrors.mother_full_name}</small> : null}
+          </label>
 
-          {/* Education & Address */}
-          <div className="form-section">
-            <h2>🎓 Education & Address</h2>
-            <div className="form-grid">
+          <label>
+            <span>Profile photo</span>
+            <input type="file" accept="image/*" onChange={(event) => { setImage(event.target.files?.[0] ?? null); setFieldErrors((current) => ({ ...current, image: undefined })) }} required aria-invalid={Boolean(fieldErrors.image)} />
+            {fieldErrors.image ? <small role="alert">{fieldErrors.image}</small> : null}
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Education <span className="required-star">*</span>
-                </label>
-                <input
-                  name="education"
-                  placeholder="Highest degree"
-                  value={formData.education}
-                  onChange={handleChange}
-                  className={errors.education ? "input-error" : ""}
-                />
-                {errors.education && (
-                  <span className="error-text">{errors.education}</span>
-                )}
-              </div>
+          <label>
+            <span>Education (optional)</span>
+            <input name="education" value={form.education} onChange={handleChange} />
+          </label>
 
-              <div className="input-group">
-                <label className="input-label">
-                  Address <span className="required-star">*</span>
-                </label>
-                <input
-                  name="address"
-                  placeholder="Full address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className={errors.address ? "input-error" : ""}
-                />
-                {errors.address && (
-                  <span className="error-text">{errors.address}</span>
-                )}
-              </div>
+          <label>
+            <span>Address (optional)</span>
+            <input name="address" value={form.address} onChange={handleChange} />
+          </label>
 
-            </div>
-          </div>
+          <label>
+            <span>Currently employed?</span>
+            <select name="is_job" value={form.is_job} onChange={handleChange}>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
 
-          {/* Job */}
-          <div className="form-section">
-            <h2>💼 Professional Details</h2>
-            <div className="form-grid">
-
-              <div className="input-group">
-                <label className="input-label">Working Status</label>
-                <select
-                  name="is_job"
-                  value={formData.is_job}
-                  onChange={handleChange}
-                >
-                  <option value="">Are you working?</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Company Name</label>
-                <input
-                  name="job_name"
-                  placeholder="Company / Organization"
-                  value={formData.job_name}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Designation</label>
-                <input
-                  name="job_designation"
-                  placeholder="Job role"
-                  value={formData.job_designation}
-                  onChange={handleChange}
-                />
-              </div>
-
-            </div>
-          </div>
-
-          {/* Family */}
-          <div className="form-section">
-            <h2>👨‍👩‍👧 Family Information</h2>
-            <div className="form-grid">
-
-              <div className="input-group">
-                <label className="input-label">
-                  Father's Name <span className="required-star">*</span>
-                </label>
-                <input
-                  name="father_full_name"
-                  placeholder="Father's full name"
-                  value={formData.father_full_name}
-                  onChange={handleChange}
-                  className={errors.father_full_name ? "input-error" : ""}
-                />
-                {errors.father_full_name && (
-                  <span className="error-text">{errors.father_full_name}</span>
-                )}
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">
-                  Mother's Name <span className="required-star">*</span>
-                </label>
-                <input
-                  name="mother_full_name"
-                  placeholder="Mother's full name"
-                  value={formData.mother_full_name}
-                  onChange={handleChange}
-                  className={errors.mother_full_name ? "input-error" : ""}
-                />
-                {errors.mother_full_name && (
-                  <span className="error-text">{errors.mother_full_name}</span>
-                )}
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">No. of Brothers</label>
-                <input
-                  name="brothers"
-                  type="number"
-                  placeholder="0"
-                  value={formData.brothers}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">No. of Sisters</label>
-                <input
-                  name="sisters"
-                  type="number"
-                  placeholder="0"
-                  value={formData.sisters}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Brother's Spouse Name</label>
-                <input
-                  name="brother_spouse_name"
-                  placeholder="Spouse name"
-                  value={formData.brother_spouse_name}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Sister's Husband Name</label>
-                <input
-                  name="sister_husband_name"
-                  placeholder="Husband name"
-                  value={formData.sister_husband_name}
-                  onChange={handleChange}
-                />
-              </div>
-
-            </div>
-          </div>
-
-          {/* Maternal */}
-          <div className="form-section">
-            <h2>🏠 Maternal Family Details</h2>
-            <div className="form-grid">
-
-              <div className="input-group">
-                <label className="input-label">Maternal Uncle Name</label>
-                <input
-                  name="maternal_uncle_name"
-                  placeholder="Uncle's name"
-                  value={formData.maternal_uncle_name}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Maternal Uncle Address</label>
-                <input
-                  name="maternal_uncle_address"
-                  placeholder="Uncle's address"
-                  value={formData.maternal_uncle_address}
-                  onChange={handleChange}
-                />
-              </div>
-
-            </div>
-          </div>
-
-          {/* Image */}
-          <div className="form-section">
-            <h2>📸 Profile Photo</h2>
-            <div className="input-group">
-              <label className="input-label">
-                Upload Photo <span className="required-star">*</span>
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className={errors.image ? "input-error" : ""}
-              />
-              {errors.image && (
-                <span className="error-text">{errors.image}</span>
-              )}
-
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="preview-image"
-                />
-              )}
-            </div>
-          </div>
-
-          {error && <p className="form-error">{String(error)}</p>}
-          {success && <p className="form-success">Profile created successfully!</p>}
-
-          <button className="register-btn" type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Profile"}
+          {error ? <p role="alert">{error}</p> : null}
+          <button type="submit" className="primary-btn full-width" disabled={loading}>
+            {loading ? 'Creating profile...' : 'Register'}
           </button>
         </form>
 
-        <p className="login-link">
-          Already registered? <Link to="/login">Login</Link>
+        <p className="auth-footer">
+          Already have an account? <Link to={LOGIN_ROUTE}>Login</Link>
         </p>
       </div>
     </section>
-  );
+  )
 }
