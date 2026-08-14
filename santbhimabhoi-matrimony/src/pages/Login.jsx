@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaSyncAlt } from 'react-icons/fa'
 import '../css/login.css'
 import { loginUser } from '../slice/loging' // Ensure filename matches (e.g. '../slice/loging' or '../slice/login')
+import { FaSyncAlt, FaEye, FaEyeSlash } from 'react-icons/fa'
 
 export default function Login() {
   const dispatch = useDispatch()
@@ -11,6 +11,7 @@ export default function Login() {
 
   // 1. Selector fixed from state.registration to state.login (or state.auth)
   const { loading = false, error = null } = useSelector((state) => state.login || state.auth || {})
+  const [showPassword, setShowPassword] = useState(false)
   const fullState = useSelector((state) => state);
   console.log('Available Redux state keys:', Object.keys(fullState));
   // Form State
@@ -129,15 +130,26 @@ export default function Login() {
             <label htmlFor="password">
               Password <span className="required-star">*</span>
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              className={errors.password ? 'input-error' : ''}
-            />
+            <div className="password-wrapper">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                className={errors.password ? 'input-error' : ''}
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
